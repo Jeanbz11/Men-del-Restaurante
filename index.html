@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistema de Pedidos - Restaurante</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Add Live Server extension if not already installed -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -33,7 +32,7 @@
 </head>
 <body class="bg-gray-50">
     <div class="container mx-auto px-4 py-8 max-w-6xl">
-        <!-- Header -->
+        <!-- Cabecera, el titulo del Restaurante-->
         <header class="flex justify-between items-center mb-8">
             <div class="flex items-center">
                 <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f6f26aa6-4de6-4384-bbcf-d161617245cd.png" alt="Logo del restaurante - icono de cuchillo y tenedor cruzados sobre plato con bordes dorados" class="mr-3 rounded-full w-10 h-10">
@@ -45,14 +44,13 @@
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Main Content -->
+            <!--Contenido principal -->
             <main class="md:col-span-2 bg-white rounded-xl shadow-md p-6">
-                <!-- Category Selector -->
+                <!-- Seleccion de las categorías -->
                 <div class="flex flex-wrap gap-2 mb-6">
     <button class="category-btn px-4 py-2 rounded-full bg-orange-200 text-orange-700 font-medium" data-category="desayunos">
       <i class="fas fa-egg mr-2"></i>Desayunos
     </button>
-
     <button class="category-btn px-4 py-2 rounded-full bg-green-100 text-green-600 font-medium" data-category="almuerzos">
         <i class="fas fa-drumstick-bite mr-2"></i>Almuerzos
     </button>
@@ -65,28 +63,21 @@
     <button class="category-btn px-4 py-2 rounded-full bg-purple-100 text-purple-600 font-medium" data-category="postres">
         <i class="fas fa-ice-cream mr-2"></i>Postres
     </button>
-
-    <!-- Porciones -->
-<button class="category-btn px-5 py-2 rounded-full bg-blue-100 text-green-600 font-medium" data-category="porciones">
+    <button class="category-btn px-5 py-2 rounded-full bg-blue-100 text-green-600 font-medium" data-category="porciones">
     <i class="fas fa-drumstick-bite mr-2"></i>Porciones
-</button>
-
-<!-- Tarrinas -->
-<button class="category-btn px-5 py-2 rounded-full bg-green-100 text-green-600 font-medium" data-category="tarrinas">
+    </button>
+    <button class="category-btn px-5 py-2 rounded-full bg-green-100 text-green-600 font-medium" data-category="tarrinas">
     <i class="fas fa-bowl-rice mr-2"></i>Tarrinas
-</button>
-
-<button class="category-btn px-5 py-2 rounded-full bg-yellow-100 text-red-600 font-medium" data-category="sopas">
+    </button>
+    <button class="category-btn px-5 py-2 rounded-full bg-yellow-100 text-red-600 font-medium" data-category="sopas">
     <i class="fas fa-bowl-rice mr-2"></i>Sopas
-</button>
-
-
+    </button>
+   <button class="category-btn px-5 py-2 rounded-full bg-red-100 text-red-700 font-medium" data-category="comidaRapida">
+    <i class="fas fa-burger mr-2"></i>Comida Rápida
+     </button>
 
 </div>
-
-
-
-               <!-- Products Grid -->
+               <!-- Seleccion de los productos -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="products-grid">
                     <!-- Comidas -->
                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="desayunos" data-id="1">

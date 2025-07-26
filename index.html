@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema de Pedidos - Restaurante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add Live Server extension if not already installed -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .category-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .cart-item:hover {
+            background-color: #0f9ece;
+        }
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: -1;
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f6f26aa6-4de6-4384-bbcf-d161617245cd.png" alt="Logo del restaurante - icono de cuchillo y tenedor cruzados sobre plato con bordes dorados" class="mr-3 rounded-full w-10 h-10">
+                <h1 class="text-2xl font-bold text-gray-800">Restaurante Alexita</h1>
+            </div>
+            <div class="text-gray-600">
+                <span id="current-time" class="font-medium"></span>
+            </div>
+        </header>
+
+        <div class="app-container grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Main Content -->
+            <main class="md:col-span-2 bg-white rounded-xl shadow-md p-6">
+                <!-- Category Selector -->
+                <div class="flex flex-wrap gap-2 mb-6">
+    <button class="category-btn px-5 py-2 rounded-full bg-orange-200 text-orange-700 font-medium" data-category="desayunos">
+      <i class="fas fa-egg mr-2"></i>Desayunos
+    </button>
+
+    <button class="category-btn px-4 py-2 rounded-full bg-green-100 text-green-600 font-medium" data-category="almuerzos">
+        <i class="fas fa-drumstick-bite mr-2"></i>Almuerzos
+    </button>
+    <button class="category-btn px-4 py-2 rounded-full bg-yellow-100 text-yellow-600 font-medium" data-category="bebidas">
+        <i class="fas fa-glass-water mr-2"></i>Bebidas
+    </button>
+    <button class="category-btn px-4 py-2 rounded-full bg-pink-100 text-pink-600 font-medium" data-category="batidos">
+        <i class="fas fa-blender mr-2"></i>Batidos
+    </button>
+    <button class="category-btn px-4 py-2 rounded-full bg-purple-100 text-purple-600 font-medium" data-category="postres">
+        <i class="fas fa-ice-cream mr-2"></i>Postres
+    </button>
+
+    <!-- Porciones -->
+<button class="category-btn px-5 py-2 rounded-full bg-blue-100 text-green-600 font-medium" data-category="porciones">
+    <i class="fas fa-drumstick-bite mr-2"></i>Porciones
+</button>
+
+<!-- Tarrinas -->
+<button class="category-btn px-5 py-2 rounded-full bg-green-100 text-green-600 font-medium" data-category="tarrinas">
+    <i class="fas fa-bowl-rice mr-2"></i>Tarrinas
+</button>
+
+<button class="category-btn px-5 py-2 rounded-full bg-yellow-100 text-red-600 font-medium" data-category="sopas">
+    <i class="fas fa-bowl-rice mr-2"></i>Sopas
+</button>
+
+
+
+</div>
+
+
+                <!-- Products Grid -->
+                <div class="grid grid-cols-3 gap-4 mt-4" id="products-grid">
+                    <!-- Comidas -->
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="desayunos" data-id="1">
+                        <img src="https://imgs.search.brave.com/51zwDQ5B_r8nRASMjwfnXaKIWWPmMQgrJOLHE-Vej9o/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bGF5bGl0YS5jb20v/cmVjaXBlcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNS8wMi9F/Y3VhZG9yaWFuLXRp/Z3JpbGxvLWRlLXZl/cmRlLWNvbi1xdWVz/by15LWNhZmUuanBn" alt="Tigrillo" class="w-full h-32 object-cover rounded-md mb-2">
+                        <h3 class="font-semibold text-gray-800">Tigrillo</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-gray-900">$3.00</span>
+                            <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="2">
+                        <img src="https://imgs.search.brave.com/AHAcMzDXPmjgdSRxTv-0n6z1DOsMgs9nZLG7g0GKDMU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9lbGdy/YW5jaG9uZXJvLmNv/bS93cC1jb250ZW50/L3VwbG9hZHMvMjAy/NC8wNi9tZW5lc3Ry/YS1jb24tY2h1bGV0/YS5qcGc" alt="" class="w-full h-32 object-cover rounded-md mb-2">
+                        <h3 class="font-semibold text-gray-800">Arroz con menestra y chuleta</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-gray-900">$2.50</span>
+                            <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="3">
+                        <img src="https://cocina.guru/wp-content/uploads/2022/08/receta-de-jugo-de-sandia.jpg" alt="Jarra de limonada natural con hielo y rodajas de limón, condensación en el vidrio" class="w-full h-32 object-cover rounded-md mb-2">
+                        <h3 class="font-semibold text-gray-800">Vaso de jugo de sandía</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-gray-900">$0.50</span>
+                            <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="4">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bcabc0e8-8720-4441-8374-207c6e4c2db8.png" alt="Café espresso en taza blanca con diseño elegante y granos de café alrededor" class="w-full h-32 object-cover rounded-md mb-2">
+                        <h3 class="font-semibold text-gray-800">Cafe</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-gray-900">$0.50</span>
+                            <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="desayunos" data-id="5">
+                        <img src="https://imgs.search.brave.com/1MXt-TO71a5JtfgH8CdSdSqYt_tJ-eVk5NWKYcdJPXo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y3JlYXRlLnZpc3Rh/LmNvbS9hcGkvbWVk/aWEvc21hbGwvNDAz/ODUwODQyL3N0b2Nr/LXBob3RvLWdvb2Qt/bW9ybmluZy1iYW5u/ZXItY29udGluZW50/YWwtYnJlYWtmYXN0/LXdoaXRlLWJlZC1z/aGVldHMtY3VwLWNv/ZmZlZQ" alt="Desayuno con cafe, pan y huevo" class="w-full h-32 object-cover rounded-md mb-2">
+                        <h3 class="font-semibold text-gray-800">Continental</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-gray-900">$2.50</span>
+                            <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                
+                    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="postres" data-id="6">
+                     <img src="https://imgs.search.brave.com/wgH3Aapy_cjDclfAXGT7wI8fcGextXF5hUihovqVn_A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/a2l0Y2hlbmdpZGdl/dC5jb20vd3AtY29u/dGVudC91cGxvYWRz/LzIwMTkvMDQvRnJl/c2FzLWNvbi1DcmVt/YS00LmpwZw" alt="Ricas fresitas" class="w-full h-32 object-cover rounded-md mb-2">
+                    <h3 class="font-semibold text-gray-800">Fresa con crema Pequeña</h3>
+                    <p class="text-sm text-gray-600 mb-2"></p>
+                    <div class="flex justify-between items-center">
+                    <span class="font-bold text-F-900">$1.00</span>
+                    <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200"><i class="fas fa-plus"></i></button>
+                    </div>
+                    </div>
+                
+
+                   
+    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="postres" data-id="7">
+                    <img src="https://imgs.search.brave.com/jNjvGtATAObgX2OPhPKY-VN8ICqNDMpyI0EYtu4OS3s/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bW9kZXJuaG9uZXku/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDIyLzA4L0ZyZXNh/cy1jb24tQ3JlbWEt/U3RyYXdiZXJyaWVz/LWFuZC1DcmVhbS0x/LTcyMHg3MjcuanBn" 
+                         alt="Ricas fresitas" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Fresa con crema grande</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.00</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="postres" data-id="8">
+                        <img src="https://imgs.search.brave.com/wgH3Aapy_cjDclfAXGT7wI8fcGextXF5hUihovqVn_A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/a2l0Y2hlbmdpZGdl/dC5jb20vd3AtY29u/dGVudC91cGxvYWRz/LzIwMTkvMDQvRnJl/c2FzLWNvbi1DcmVt/YS00LmpwZw" alt="Ricas fresitas" class="w-full h-32 object-cover rounded-md mb-2">
+                                    <h3 class="font-semibold text-gray-800">Fresa con crema mediana</h3>
+                        <p class="text-sm text-gray-600 mb-2"></p>
+                        <div class="flex justify-between items-center">
+                        <span class="font-bold text-gray-900">$1.50</span>
+                        <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200"><i class="fas fa-plus"></i></button>
+                        </div>
+                    </div>
+
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="tarrinas" data-id="9">
+                    <img src="https://imgs.search.brave.com/_6F9UuDGAS2VvxCPk2mDZlN21hbXfK_zBK36D347o2c/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wYXBl/cnNob3AuY29tLmVj/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzA0L1RBUlJJTkEt/MS1MSVRSTy0tMzAw/eDMwMC5qcGc" 
+                         alt="Tarrinas para llevar" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Tarrina</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.25</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                      <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="10">
+                    <img src="https://sabor.eluniverso.com/wp-content/uploads/2024/07/arroz-con-menestra-2.jpg" 
+                         alt="Arroz, mestra y carne frita para servir" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Arroz con menestra y carne frita</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="11">
+                    <img src="https://unviajeaecuador.wordpress.com/wp-content/uploads/2014/05/corvina-frita-entera.jpg" 
+                         alt="Corvina frita completa" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Corvina frita</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$3.00</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="batidos" data-id="12">
+                    <img src="https://lh5.googleusercontent.com/proxy/mbWZROuuQe9U_8mPE49EbmkWu-ihuEUChCkCTgNM647t-XKQgOyAZyn6ewgSdnLh1bpGP9P8rz9Y1Vugh92cBlBYF-nsnrL4iK1cBQSuJ9vR5HQCwuQzjXK2HQUFLb149vAT4wT7_ug" 
+                         alt="Batido de mora con leche" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Mora</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="batidos" data-id="13">
+                    <img src="https://cdn0.uncomo.com/es/posts/2/3/5/como_hacer_batido_de_melon_7532_orig.jpg" 
+                         alt="Batido con leche" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Melon</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="batidos" data-id="14">
+                    <img src="https://tofuu.getjusto.com/orioneat-local/resized2/z8CpjE3GftBKC4C3z-2400-x.webp" 
+                         alt="Batido con leche" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Naranjilla</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="batidos" data-id="15">
+                    <img src="https://inmamamaggieskitchen.com/wp-content/uploads/2023/07/Licuado-de-platano-served-with-ground-cinnamon-on-top.jpg" 
+                         alt="Batido con leche" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Banano</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="batidos" data-id="16">
+                    <img src="https://www.recetasnestle.com.ar/sites/default/files/srh_recipes/6c4e3a993f8b83edbdcfaf7bac15079c.jpg" 
+                         alt="Batido con leche" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Frutilla</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="17">
+                    <img src="https://www.elmanaba.es/wp-content/uploads/2022/01/camarones-explotados.jpg" 
+                         alt="Camaron con arroz, ensalada y patacon" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Camaron reventado</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$3.00</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="desayunos" data-id="18">
+                    <img src="https://images.cookforyourlife.org/wp-content/uploads/2018/03/French-Toast-with-Tahini-and-Yogurt-e1721066794966.jpg"
+                         alt="Tostada" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Tostada con queso</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="19">
+                    <img src=" https://sabor.eluniverso.com/wp-content/uploads/2023/09/fvp300916fd03_19368984-scaled.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Seco de pollo</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="20">
+                    <img src=" https://www.recetas-ecuatorianas.com/base/stock/Recipe/bistec-ecuatoriano/bistec-ecuatoriano_web.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Bistec de carne</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="21">
+                    <img src=" https://sumesa.com.ec/wp-content/uploads/2021/09/GUATITA.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Guatitia</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="22">
+                    <img src=" https://storage.googleapis.com/avena-recipes-v2/2019/10/1571783430631.jpeg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Pechuga frita</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="23">
+                    <img src=" https://i0.wp.com/qocinaencasa.com/wp-content/uploads/2024/04/Seco-de-pescado-norteno.jpg?fit=1600%2C1067&ssl=1" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Seco de pescado</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="24">
+                    <img src="https://cdn.elcocinerocasero.com/imagen/paso-receta/1000/2021-05-19-18-59-38/fideos-con-pollo-paso-8.jpeg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Tallarin de pollo</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="25">
+                    <img src="https://i.ytimg.com/vi/Y3xK7Ewz8dk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCsI6U8LKn7nneh18sYt5F4XGQvLA" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Encocado de pescado</h3>
+                     <p class="text-sm text-gray-600 mb-2">Viene con arroz, patacón, ensalada y adicional un jugo</p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$3.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+                    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="26">
+                    <img src="https://i.ytimg.com/vi/f0y7SC651b0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDGRIwsA8YGFOlOWSY5W9aKHx_sOA" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Encocado de pollo</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 text-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="27">
+                    <img src="https://scontent.fmec4-1.fna.fbcdn.net/v/t39.30808-6/466002691_9007596199259292_647416876924660983_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yZkWDgnv1toQ7kNvwFxpZ82&_nc_oc=Adk0oAUeeH5cvXwe6ZFde67FC64ELCrbOLvjNXpvbVZXzTieG5VcjTRU057aXsT3KE4&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=eXFxitT4VMP4GFY95Hlrig&oh=00_AfQZXF3fKG1AkxIib23aw6M1ZCNZkdK2zlmcMRHHvMd21A&oe=68857AB0" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Bistec de higado</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="porciones" data-id="28">
+                    <img src="https://taitico.com/wp-content/uploads/2024/02/porcion-de-arroz.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Porcion de arroz</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="porciones" data-id="29">
+                    <img src="https://scontent.fmec4-1.fna.fbcdn.net/v/t1.6435-9/175682689_182121823735043_4800048554215980459_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=dR3xgZDjfFgQ7kNvwHEoJqK&_nc_oc=AdlVE1DpFvvneVJe7uk0NrGPcy_0ejiB-zTnB7i_yTHMLcNfMmRFd5UHiovxMqmHmOE&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=MOv2UpsElnuUY5_WGf_6bQ&oh=00_AfRG2kfYP944hdyTXM3ESnypE_eTU46juU20QWDNtTzMIw&oe=68A75B32" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Tortilla de huevo con patacones</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="porciones" data-id="30">
+                    <img src="https://s1.elespanol.com/2024/02/09/cocinillas/recetas/831427168_239806899_1706x1280.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Huevo Frito</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="porciones" data-id="31">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5ji-7AzOyGgMi4c3Q4kkmQnyPuSRDrFA5Cg&s" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Huevo a la copa</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                      <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="32">
+                    <img src="
+                    https://static.vecteezy.com/system/resources/previews/059/892/965/non_2x/chamomile-tea-with-mint-leaves-is-steaming-in-glass-cup-on-wooden-table-photo.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Té de manzanilla</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="33">
+                    <img src="https://static.vecteezy.com/system/resources/previews/030/254/626/non_2x/a-cup-of-tea-with-anise-and-cinnamon-on-a-wooden-table-ai-generated-free-photo.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Té de anís</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="34">
+                    <img src="https://www.lahora.com.ec/__export/1744739815624/sites/lahora/img/2025/04/15/20250415_115652101_La_hierba_luisa_y_sus_mxltiples_propiedades_.jpg_2034683031.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Té de hierva luisa</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="35">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6f8xeETiJSf1jDI4dt2ivDyXvysio5N3IIQ&s" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Coca Cola personal plastico</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="36">
+                    <img src="https://www.supermercadosantamaria.com/documents/10180/10504/69796_G.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Coca Cola de 1.5 litros</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.5</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="37">
+                    <img src="https://www.comisariatoeconomico.com/wp-content/uploads/2025/01/7861024604222-300x300.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Coca Cola de 3 litros</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$3.25</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="38">
+                    <img src="https://galacargo.com.ec/wp-content/uploads/2020/06/coca-cola.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Coca Cola personal de vidrio</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="39">
+                    <img src="https://lh4.googleusercontent.com/proxy/aV0u4RlY83SK_nvrkUG5LevFce_n4TKWGSsc_znNxiFkQOV3LEYCzDi6548F1gU8McefvsZM2Q-WDwnpJZ3aLo4NVoYG6iIaq7IstR8Q" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Seco de chancho</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                     <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="40">
+                    <img src="https://lacasadellibrillo.com/wp-content/uploads/2020/09/apanado.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Arroz con carne apanada</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                      <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="41">
+                    <img src=" https://avecampo.com.ec/wp-content/uploads/2024/06/1546_2.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Arroz con pechuga apanada</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="42">
+                    <img src="  https://jameaperu.com/assets/images/pollo-al-horno_800x534.webp" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Pollo al Horno</h3>
+                     <p class="text-sm text-gray-600 mb-2">Con arroz, ensalada rusa y patacones</p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="43">
+                    <img src="  https://peopleenespanol.com/thmb/em83Twz8Upw0ktCiE09nKqnu-SY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8714519b-06f8-4298-b9b0-d4137486666e-489367376f8f49f28aaf0d7e67a8f90c.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Vaso de Limonada</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="44">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqmzMCaZEJQFu0RY0O-eFSKyImEA8_ixKBsA&s" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Vaso de jugo de tomate de árbol</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="45">
+                    <img src="https://www.cocina-ecuatoriana.com/base/stock/Recipe/jugo-de-naranjilla/jugo-de-naranjilla_web.jpg.webp" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Vaso de jugo de naranjilla</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="46">
+                    <img src=" https://www.clarin.com/2022/08/21/KfHICuhUX_2000x1500__1.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Vaso de jugo de naranja</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$0.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="bebidas" data-id="47">
+                    <img src=" https://image.shutterstock.com/image-vector/realistic-yellow-juice-jug-3d-260nw-2337946719.jpg" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Jarra de jugo</h3>
+                     <p class="text-sm text-gray-600 mb-2">El sabor que esté en disposición</p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$2.00</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="sopas" data-id="48">
+                    <img src="https://scontent.fmec4-1.fna.fbcdn.net/v/t1.6435-9/59435668_839376989773101_2097698306955149312_n.png?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=kum5O4JVUtwQ7kNvwEp9C8V&_nc_oc=Adljgb500AOTE29Zvba2iL-iHrbXTHp-ElDN404Slm3hOi5PRSb2xaiao6OyhkUOyGg&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=d0NmIqKEk_vkfkmNP4Bq2A&oh=00_AfRziS4QA3QINH7k1qyeAqserPxfIY3fg5Hp5uiydvSeyA&oe=68AB8547" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Sopa de pescado con maní</h3>
+                     <p class="text-sm text-gray-600 mb-2"></p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$1.50</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+                    <div class="item-card p-4 border border-gray-200 rounded-lg transition-all duration-200 cursor-pointer" data-category="almuerzos" data-id="49">
+                    <img src="
+                    https://preview.redd.it/almuerzo-completo-por-solo-2-dolares-v0-jqun69ttl1ue1.jpeg?width=640&crop=smart&auto=webp&s=8589fa838176f92ee677b706f7202fae5ad73224" 
+                         alt="" 
+                      class="w-full h-32 object-cover rounded-md mb-2">
+                     <h3 class="font-semibold text-gray-800">Almuerzo completo</h3>
+                     <p class="text-sm text-gray-600 mb-2">Incluye sopa, segundo y jugo</p>
+                     <div class="flex justify-between items-center">
+                     <span class="font-bold text-gray-900">$3.00</span>
+                         <button class="add-to-cart bg-blue-100 ext-blue-600 p-1 rounded-full hover:bg-blue-200">
+                           <i class="fas fa-plus"></i>
+                        </button>
+                        </div>
+                    </div>
+
+
+             
+                </div>
+            </main>
+
+            <!-- Sidebar - Cart -->
+            <aside class="sidebar bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-receipt mr-2"></i>Pedido Actual
+                </h2>
+
+                <div class="mb-4">
+                    <label for="table-number" class="block text-sm font-medium text-gray-700 mb-1">Número de Mesa</label>
+                    <select id="table-number" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">Seleccionar mesa</option>
+                        <option value="1">Mesa 1</option>
+                        <option value="2">Mesa 2</option>
+                        <option value="3">Mesa 3</option>
+                        <option value="4">Mesa 4</option>
+                        <option value="5">Mesa 5</option>
+                        <option value="6">Mesa 6</option>
+                        <option value="7">Mesa 7</option>
+                    </select>
+                </div>
+                <div id="cart-items" class="divide-y divide-gray-200 max-h-96 overflow-y-auto mb-4">
+                    <!-- Items will be added here dynamically -->
+                    <p class="text-gray-500 italic py-4 text-center" id="empty-cart-message">No hay items en el pedido</p>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4 mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    
+                    <!--<div class="flex justify-between text-lg font-bold">
+                        <span>Total:</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                </div>-->
+
+                <div class="flex flex-col gap-2">
+                    <button id="send-order" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md font-medium flex items-center justify-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Enviar Orden
+                    </button>
+                    <button id="clear-cart" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md font-medium">
+                        Limpiar Orden
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Actualiza la hora actual en el header cada segundo
+            function updateTime() {
+                const now = new Date();
+                document.getElementById('current-time').textContent = now.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+            updateTime();
+            setInterval(updateTime, 1000);
+
+            // Datos de productos de muestra (en una app real vendría de una base de datos)
+            // Puedes agregar más productos aquí siguiendo el mismo formato
+            const products = [
+            { 
+                id: 1,
+                 name: 'Tigrillo',
+                description: '',
+                price: 3.00,
+                category: 'comidas',
+                image: 'https://imgs.search.brave.com/51zwDQ5B_r8nRASMjwfnXaKIWWPmMQgrJOLHE-Vej9o/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bGF5bGl0YS5jb20v/cmVjaXBlcy93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyNS8wMi9F/Y3VhZG9yaWFuLXRp/Z3JpbGxvLWRlLXZl/cmRlLWNvbi1xdWVz/by15LWNhZmUuanBn' 
+            },
+                { id: 2, name: 'Arroz con menestra y chuleta', description: '', price: 2.50, category: 'almuerzos', image: 'https://imgs.search.brave.com/AHAcMzDXPmjgdSRxTv-0n6z1DOsMgs9nZLG7g0GKDMU/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9lbGdy/YW5jaG9uZXJvLmNv/bS93cC1jb250ZW50/L3VwbG9hZHMvMjAy/NC8wNi9tZW5lc3Ry/YS1jb24tY2h1bGV0/YS5qcGc' },
+                { id: 3, name: 'Jugo de sandia', description: 'Refrescante', price: 0.50, category: 'bebidas', image: 'https://cocina.guru/wp-content/uploads/2022/08/receta-de-jugo-de-sandia.jpg' },
+                { id: 4, name: 'Café', description: 'Café ', price: 0.50, category: 'bebidas', image: 'https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bcabc0e8-8720-4441-8374-207c6e4c2db8.png' },
+                { id: 5, name: 'Desayuno continental', description: '', price: 2.50, category: 'desayunos', image: 'https://imgs.search.brave.com/1MXt-TO71a5JtfgH8CdSdSqYt_tJ-eVk5NWKYcdJPXo/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/Y3JlYXRlLnZpc3Rh/LmNvbS9hcGkvbWVk/aWEvc21hbGwvNDAz/ODUwODQyL3N0b2Nr/LXBob3RvLWdvb2Qt/bW9ybmluZy1iYW5u/ZXItY29udGluZW50/YWwtYnJlYWtmYXN0/LXdoaXRlLWJlZC1z/aGVldHMtY3VwLWNv/ZmZlZQ' },
+                { id: 6, name: 'Fresas con Crema', description: 'Pequeña', price: 1.00, category: 'postres', image: 'https://imgs.search.brave.com/wgH3Aapy_cjDclfAXGT7wI8fcGextXF5hUihovqVn_A/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/a2l0Y2hlbmdpZGdl/dC5jb20vd3AtY29u/dGVudC91cGxvYWRz/LzIwMTkvMDQvRnJl/c2FzLWNvbi1DcmVt/YS00LmpwZw' },
+                { id: 7, name: 'Fresas con Crema', description: 'Un dulce sabor', price: 2.00, category: 'postres', image: 'https://imgs.search.brave.com/jNjvGtATAObgX2OPhPKY-VN8ICqNDMpyI0EYtu4OS3s/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/bW9kZXJuaG9uZXku/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDIyLzA4L0ZyZXNh/cy1jb24tQ3JlbWEt/U3RyYXdiZXJyaWVz/LWFuZC1DcmVhbS0x/LTcyMHg3MjcuanBn' },
+                { id: 8, name: 'Fresas con Crema', description: 'Fresa con crema mediana', price: 1.50, category: 'postres', image: 'https://imgs.search.brave.com/VlgaQc0fUe_r7sl_gfgKooiCnNTm62DYu0d5Mv5-Els/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZXhp/Y2FubWFkZW1lYXRs/ZXNzLmNvbS93cC1j/b250ZW50L3VwbG9h/ZHMvMjAyMi8wMy9M/YXllcmluZy1GcmVz/YXMtY29uLUNyZW1h/LmpwZw' },
+                { id: 9, name: 'Tarrina', description: 'Tarrina de plastico', price: 0.25, category: 'tarrinas', image: 'https://imgs.search.brave.com/_6F9UuDGAS2VvxCPk2mDZlN21hbXfK_zBK36D347o2c/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9wYXBl/cnNob3AuY29tLmVj/L3dwLWNvbnRlbnQv/dXBsb2Fkcy8yMDIx/LzA0L1RBUlJJTkEt/MS1MSVRSTy0tMzAw/eDMwMC5qcGc' },
+                { id: 10, name: 'Arroz con carne frita', description: 'Almuerzo completo', price: 2.50, category: 'almuerzos', image: 'https://sabor.eluniverso.com/wp-content/uploads/2024/07/arroz-con-menestra-2.jpg' },
+                { id: 11, name: 'Corvina Frita', description: 'Almuerzo completo', price: 3.00, category: 'almuerzos', image: 'https://unviajeaecuador.wordpress.com/wp-content/uploads/2014/05/corvina-frita-entera.jpg' },
+                { id: 12, name: 'Batido de Mora ', description: 'Batido de frutas', price: 1.50, category: 'batidos', image: 'https://lh5.googleusercontent.com/proxy/mbWZROuuQe9U_8mPE49EbmkWu-ihuEUChCkCTgNM647t-XKQgOyAZyn6ewgSdnLh1bpGP9P8rz9Y1Vugh92cBlBYF-nsnrL4iK1cBQSuJ9vR5HQCwuQzjXK2HQUFLb149vAT4wT7_ug' },
+                { id: 13, name: 'Batido de Melón ', description: 'Batido de frutas', price: 1.50, category: 'batidos', image: 'https://cdn0.uncomo.com/es/posts/2/3/5/como_hacer_batido_de_melon_7532_orig.jpg' },
+                { id: 14, name: 'Batido de Naranjilla ', description: 'Batido de frutas', price: 1.50, category: 'batidos', image: 'https://tofuu.getjusto.com/orioneat-local/resized2/z8CpjE3GftBKC4C3z-2400-x.webp' },
+                { id: 15, name: 'Batido de Banano ', description: 'Batido de frutas', price: 1.50, category: 'batidos', image: 'https://inmamamaggieskitchen.com/wp-content/uploads/2023/07/Licuado-de-platano-served-with-ground-cinnamon-on-top.jpg' },
+                { id: 16, name: 'Batido de Frutilla', description: 'Batido de frutas', price: 1.50, category: 'batidos', image: 'https://www.recetasnestle.com.ar/sites/default/files/srh_recipes/6c4e3a993f8b83edbdcfaf7bac15079c.jpg' },
+                { id: 17, name: 'Camaron reventado', description: 'Plato especial', price: 3.00, category: 'almuerzos', image: 'https://www.elmanaba.es/wp-content/uploads/2022/01/camarones-explotados.jpg' },
+                { id: 18, name: 'Tostada con queso', description: 'Acompañar con batido', price: 0.50, category: 'desayunos', image: 'https://images.cookforyourlife.org/wp-content/uploads/2018/03/French-Toast-with-Tahini-and-Yogurt-e1721066794966.jpg' },
+                 { id: 19, name: 'Seco de pollo', description: 'Viene con arroz, ensalada y patacones', price: 2.50, category: 'almuerzos', image: 'https://sabor.eluniverso.com/wp-content/uploads/2023/09/fvp300916fd03_19368984-scaled.jpg' },
+                { id: 20, name: 'Bistec de carne', description: 'Viene con arroz, ensalada y patacones', price: 2.50, category: 'almuerzos', image: 'https://www.recetas-ecuatorianas.com/base/stock/Recipe/bistec-ecuatoriano/bistec-ecuatoriano_web.jpg' },
+                { id: 21, name: 'Guatita', description: '', price: 2.50, category: 'almuerzos', image: 'https://sumesa.com.ec/wp-content/uploads/2021/09/GUATITA.jpg' },
+                { id: 22, name: 'Pechuga Frita', description: '', price: 2.50, category: 'almuerzos', image: 'https://storage.googleapis.com/avena-recipes-v2/2019/10/1571783430631.jpeg' },
+                { id: 23, name: 'Seco de pescado', description: '', price: 2.50, category: 'almuerzos', image: 'https://i0.wp.com/qocinaencasa.com/wp-content/uploads/2024/04/Seco-de-pescado-norteno.jpg?fit=1600%2C1067&ssl=1' },
+                { id: 24, name: 'Tallarin de pollo', description: '', price: 2.50, category: 'almuerzos', image: 'https://cdn.elcocinerocasero.com/imagen/paso-receta/1000/2021-05-19-18-59-38/fideos-con-pollo-paso-8.jpeg' },
+                { id: 25, name: 'Encocado de pescado', description: '', price: 3.50, category: 'almuerzos', image: 'https://i.ytimg.com/vi/Y3xK7Ewz8dk/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCsI6U8LKn7nneh18sYt5F4XGQvLA' },
+                { id: 26, name: 'Encocado de pollo', description: '', price: 2.50, category: 'almuerzos', image: 'https://i.ytimg.com/vi/f0y7SC651b0/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDGRIwsA8YGFOlOWSY5W9aKHx_sOA' },
+                { id: 27, name: 'Bistec de higado', description: '', price: 2.50, category: 'almuerzos', image: 'https://scontent.fmec4-1.fna.fbcdn.net/v/t39.30808-6/466002691_9007596199259292_647416876924660983_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=105&ccb=1-7&_nc_sid=127cfc&_nc_ohc=yZkWDgnv1toQ7kNvwFxpZ82&_nc_oc=Adk0oAUeeH5cvXwe6ZFde67FC64ELCrbOLvjNXpvbVZXzTieG5VcjTRU057aXsT3KE4&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=eXFxitT4VMP4GFY95Hlrig&oh=00_AfQZXF3fKG1AkxIib23aw6M1ZCNZkdK2zlmcMRHHvMd21A&oe=68857AB0' },
+                { id: 28, name: 'Porcion de arroz', description: '', price: 1, category: 'porciones', image: 'https://taitico.com/wp-content/uploads/2024/02/porcion-de-arroz.jpg' },
+                { id: 29, name: 'Tortilla de huevo con patacones', description: '', price: 2, category: 'porciones', image: 'https://scontent.fmec4-1.fna.fbcdn.net/v/t1.6435-9/175682689_182121823735043_4800048554215980459_n.jpg?stp=dst-jpg_p526x296_tt6&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=dR3xgZDjfFgQ7kNvwHEoJqK&_nc_oc=AdlVE1DpFvvneVJe7uk0NrGPcy_0ejiB-zTnB7i_yTHMLcNfMmRFd5UHiovxMqmHmOE&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=MOv2UpsElnuUY5_WGf_6bQ&oh=00_AfRG2kfYP944hdyTXM3ESnypE_eTU46juU20QWDNtTzMIw&oe=68A75B32' },
+                { id: 30, name: 'Huevo Frito', description: '', price: 0.50, category: 'porciones', image: 'https://s1.elespanol.com/2024/02/09/cocinillas/recetas/831427168_239806899_1706x1280.jpg' },
+                { id: 31, name: 'Huevo a la copa', description: '', price: 0.50, category: 'porciones', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5ji-7AzOyGgMi4c3Q4kkmQnyPuSRDrFA5Cg&s' },
+                { id: 32, name: 'Te de manzanilla ', description: '', price: 0.50, category: 'bebidas', image: 'https://static.vecteezy.com/system/resources/previews/059/892/965/non_2x/chamomile-tea-with-mint-leaves-is-steaming-in-glass-cup-on-wooden-table-photo.jpg' },
+                { id: 33, name: 'Té de anis ', description: '', price: 0.50, category: 'bebidas', image: 'https://static.vecteezy.com/system/resources/previews/030/254/626/non_2x/a-cup-of-tea-with-anise-and-cinnamon-on-a-wooden-table-ai-generated-free-photo.jpg' },
+                { id: 34, name: 'Té de Hierva Luisa', description: '', price: 0.50, category: 'bebidas', image: 'https://www.lahora.com.ec/__export/1744739815624/sites/lahora/img/2025/04/15/20250415_115652101_La_hierba_luisa_y_sus_mxltiples_propiedades_.jpg_2034683031.jpg' },
+                { id: 35, name: 'Coca cola personal ', description: '', price: 0.50, category: 'bebidas', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6f8xeETiJSf1jDI4dt2ivDyXvysio5N3IIQ&s' },
+                { id: 36, name: 'Coca cola 1.5 litros ', description: '', price: 1.50, category: 'bebidas', image: 'https://www.supermercadosantamaria.com/documents/10180/10504/69796_G.jpg' },
+                { id: 37, name: 'Coca cola de 3 litros ', description: '', price: 3.25, category: 'bebidas', image: ' https://www.comisariatoeconomico.com/wp-content/uploads/2025/01/7861024604222-300x300.jpg' },
+                { id: 38, name: 'Coca cola personal de vidrio', description: '', price: 0.50, category: 'bebidas', image: ' https://galacargo.com.ec/wp-content/uploads/2020/06/coca-cola.jpg' },
+                { 
+                id: 39,
+                 name: 'Seco de Chancho',
+                description: '',
+                price: 2.50,
+                category: 'almuerzos',
+                image: 'https://lh4.googleusercontent.com/proxy/aV0u4RlY83SK_nvrkUG5LevFce_n4TKWGSsc_znNxiFkQOV3LEYCzDi6548F1gU8McefvsZM2Q-WDwnpJZ3aLo4NVoYG6iIaq7IstR8Q' 
+            },
+            { 
+                id: 40,
+                 name: 'Carne Apanada',
+                description: '',
+                price: 2.50,
+                category: 'almuerzos',
+                image: 'https://lacasadellibrillo.com/wp-content/uploads/2020/09/apanado.jpg' 
+            },
+            { 
+                id: 41,
+                 name: 'Pechuga apanada',
+                description: '',
+                price: 2.50,
+                category: 'almuerzos',
+                image: 'https://avecampo.com.ec/wp-content/uploads/2024/06/1546_2.jpg' 
+            },
+            { 
+                id: 42,
+                 name: 'Pollo al horno',
+                description: '',
+                price: 2.50,
+                category: 'bebidas',
+                image: ' https://jameaperu.com/assets/images/pollo-al-horno_800x534.webp' 
+            },
+            { 
+                id: 43,
+                 name: 'Jugo de limonada',
+                description: '',
+                price: 0.50,
+                category: 'bebidas',
+                image: 'https://peopleenespanol.com/thmb/em83Twz8Upw0ktCiE09nKqnu-SY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/8714519b-06f8-4298-b9b0-d4137486666e-489367376f8f49f28aaf0d7e67a8f90c.jpg' 
+            },
+            { 
+                id: 44,
+                 name: 'Jugo de tomate de arbol',
+                description: '',
+                price: 0.50,
+                category: 'bebidas',
+                image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqmzMCaZEJQFu0RY0O-eFSKyImEA8_ixKBsA&s' 
+            },
+            { 
+                id: 45,
+                 name: 'Jugo de naranjilla',
+                description: '',
+                price: 0.50,
+                category: 'bebidas',
+                image: 'https://www.cocina-ecuatoriana.com/base/stock/Recipe/jugo-de-naranjilla/jugo-de-naranjilla_web.jpg.webp' 
+            },
+            { 
+                id: 46,
+                 name: 'Jugo de naranja',
+                description: '',
+                price: 0.50,
+                category: 'bebidas',
+                image: 'https://www.clarin.com/2022/08/21/KfHICuhUX_2000x1500__1.jpg' 
+            },
+            { 
+                id: 47,
+                 name: 'Jarra de jugo',
+                description: '',
+                price: 2.00,
+                category: 'bebidas',
+                image: ' https://image.shutterstock.com/image-vector/realistic-yellow-juice-jug-3d-260nw-2337946719.jpg' 
+            },
+            { 
+                id: 48,
+                 name: 'Sopa de Pescado',
+                description: '',
+                price: 1.50,
+                category: 'sopas',
+                image: 'https://scontent.fmec4-1.fna.fbcdn.net/v/t1.6435-9/59435668_839376989773101_2097698306955149312_n.png?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=kum5O4JVUtwQ7kNvwEp9C8V&_nc_oc=Adljgb500AOTE29Zvba2iL-iHrbXTHp-ElDN404Slm3hOi5PRSb2xaiao6OyhkUOyGg&_nc_zt=23&_nc_ht=scontent.fmec4-1.fna&_nc_gid=d0NmIqKEk_vkfkmNP4Bq2A&oh=00_AfRziS4QA3QINH7k1qyeAqserPxfIY3fg5Hp5uiydvSeyA&oe=68AB8547' 
+            },
+
+             { 
+                id: 49,
+                 name: 'Almuerzo completo',
+                description: '',
+                price: 3.00,
+                category: 'almuerzos',
+                image: 'https://preview.redd.it/almuerzo-completo-por-solo-2-dolares-v0-jqun69ttl1ue1.jpeg?width=640&crop=smart&auto=webp&s=8589fa838176f92ee677b706f7202fae5ad73224' 
+            },
+
+           
+
+
+           
+
+            
+           
+
+            
+            
+            
+            
+                
+
+
+
+               
+
+                
+
+
+                
+                
+
+
+                
+
+
+                
+
+            ];
+
+            // Funcionalidad del carrito
+            // El carrito es un array que guarda los productos seleccionados
+            let cart = [];
+            const cartItemsEl = document.getElementById('cart-items');
+            const subtotalEl = document.getElementById('subtotal');
+            const taxEl = document.getElementById('tax');
+            const totalEl = document.getElementById('total');
+            const emptyCartMsg = document.getElementById('empty-cart-message');
+            const sendOrderBtn = document.getElementById('send-order');
+            const clearCartBtn = document.getElementById('clear-cart');
+            const tableNumberEl = document.getElementById('table-number');
+
+            // Load cart from localStorage
+            function loadCart() {
+                const savedCart = localStorage.getItem('restaurantCart');
+                if (savedCart) {
+                    cart = JSON.parse(savedCart);
+                    updateCartUI();
+                }
+            }
+
+            // Save cart to localStorage
+            function saveCart() {
+                localStorage.setItem('restaurantCart', JSON.stringify(cart));
+            }
+
+            // Update cart UI
+            function updateCartUI() {
+                // Clear the cart
+                cartItemsEl.innerHTML = '';
+                
+                if (cart.length === 0) {
+                    emptyCartMsg.style.display = 'block';
+                    subtotalEl.textContent = '$0.00';
+                    taxEl.textContent = '$0.00';
+                    totalEl.textContent = '$0.00';
+                    saveCart();
+                    return;
+                }
+                
+                emptyCartMsg.style.display = 'none';
+                
+                // Add each item to the cart
+                cart.forEach((item, index) => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'cart-item py-3 px-2 flex justify-between items-center';
+                    itemEl.dataset.index = index;
+                    
+                    itemEl.innerHTML = `
+                        <div class="flex items-center">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 object-cover rounded-md mr-3">
+                            <div>
+                                <h4 class="font-medium">${item.name}</h4>
+                                <div class="flex items-center mt-1">
+                                    <button class="quantity-btn decrease w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center" data-index="${index}">
+                                        <i class="fas fa-minus text-xs"></i>
+                                    </button>
+                                    <span class="mx-2">${item.quantity}</span>
+                                    <button class="quantity-btn increase w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center" data-index="${index}">
+                                        <i class="fas fa-plus text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-medium">$${(item.price * item.quantity).toFixed(2)}</div>
+                            <button class="remove-item text-red-500 text-xs mt-1" data-index="${index}">
+                                <i class="fas fa-trash-alt mr-1"></i>Quitar
+                            </button>
+                        </div>
+                    `;
+                    
+                    cartItemsEl.appendChild(itemEl);
+                });
+                
+                // Calculate totals
+              const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const total = subtotal;
+
+subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+taxEl.textContent = '$0.00';  // O también puedes ocultar el impuesto en el HTML si prefieres
+totalEl.textContent = `$${total.toFixed(2)}`;
+
+
+            }
+
+            // Añade un producto al carrito
+            // Si ya existe, incrementa la cantidad
+            function addToCart(product) {
+                const existingItemIndex = cart.findIndex(item => item.id === product.id && item.name === product.name);
+                
+                if (existingItemIndex !== -1) {
+                    cart[existingItemIndex].quantity++;
+                } else {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.image,
+                        quantity: 1
+                    });
+                }
+                
+                saveCart();
+                updateCartUI();
+                return true;
+            }
+
+            // Remove item from cart
+            function removeFromCart(index) {
+                cart.splice(index, 1);
+                saveCart();
+                updateCartUI();
+            }
+
+            // Update item quantity
+            function updateQuantity(index, change) {
+                const item = cart[index];
+                item.quantity += change;
+                
+                if (item.quantity <= 0) {
+                    removeFromCart(index);
+                } else {
+                    saveCart();
+                    updateCartUI();
+                }
+            }
+
+            // Eliminar Carrito
+            function clearCart() {
+                cart = [];
+                saveCart();
+                updateCartUI();
+                tableNumberEl.value = '';
+            }
+
+            // Enviar Orden
+           function sendOrder() {
+    if (cart.length === 0) {
+        alert('No hay items en el pedido');
+        return;
+    }
+
+    if (!tableNumberEl.value) {
+        alert('Por favor selecciona un número de mesa');
+        return;
+    }
+
+    const order = {
+        table: tableNumberEl.value,
+        items: cart,
+        subtotal: parseFloat(subtotalEl.textContent.replace('$', '')),
+        total: parseFloat(subtotalEl.textContent.replace('$', '')), // total igual a subtotal
+        datetime: new Date().toLocaleString()
+    };
+
+    const printWindow = window.open('', '', 'width=600,height=700');
+    if (!printWindow) {
+        alert('Por favor permite ventanas emergentes para imprimir el recibo.');
+        return;
+    }
+
+    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Recibo Mesa ${order.table}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                h1, h2 { text-align: center; }
+                .receipt-item { margin-bottom: 10px; }
+                .total { font-weight: bold; margin-top: 20px; }
+                .thank-you { text-align: center; margin-top: 30px; }
+            </style>
+        </head>
+        <body>
+            <h1>Restaurante Alexita</h1>
+            <h2>Recibo Mesa ${order.table}</h2>
+            <p>${order.datetime}</p>
+            <hr>
+            ${order.items.map(item => `
+                <div class="receipt-item">
+                    ${item.quantity} x ${item.name} - $${(item.price * item.quantity).toFixed(2)}
+                </div>
+            `).join('')}
+            <hr>
+            <div class="total">Subtotal: $${order.subtotal.toFixed(2)}</div>
+            <div class="total">Total: $${order.total.toFixed(2)}</div>
+            <div class="thank-you">¡Gracias por preferirnos!</div>
+        </body>
+        </html>
+    `);
+
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+
+    clearCart();
+}
+
+            // Eventos
+            document.querySelectorAll('.add-to-cart').forEach(button => {
+                button.addEventListener('click', function() {
+                    const itemCard = this.closest('.item-card');
+                    const productId = parseInt(itemCard.dataset.id);
+                    const product = products.find(p => p.id === productId);
+                    if (!product) {
+                        console.error('Product not found with ID:', productId);
+                        return false;
+                    }
+                    if (product && addToCart(product)) {
+                        this.classList.add('bg-green-500', 'text-white');
+                        setTimeout(() => {
+                            this.classList.remove('bg-green-500', 'text-white');
+                        }, 300);
+                    }
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-item') || e.target.closest('.remove-item')) {
+                    const index = parseInt(e.target.dataset.index || e.target.closest('.remove-item').dataset.index);
+                    removeFromCart(index);
+                }
+                
+                if (e.target.classList.contains('quantity-btn') || e.target.closest('.quantity-btn')) {
+                    const btn = e.target.classList.contains('quantity-btn') ? e.target : e.target.closest('.quantity-btn');
+                    const index = parseInt(btn.dataset.index);
+                    const isIncrease = btn.classList.contains('increase');
+                    updateQuantity(index, isIncrease ? 1 : -1);
+                }
+            });
+
+            sendOrderBtn.addEventListener('click', sendOrder);
+            clearCartBtn.addEventListener('click', clearCart);
+
+            // Category filtering
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                    this.classList.toggle('bg-blue-600');
+                    this.classList.toggle('text-white');
+                    
+                    // Show all items first
+                    document.querySelectorAll('.item-card').forEach(card => {
+                        card.style.display = 'block';
+                    });
+                    
+                    // Hide if no active categories selected
+                    const activeCategories = document.querySelectorAll('.category-btn.active').length;
+                    if (activeCategories > 0) {
+                        document.querySelectorAll('.item-card').forEach(card => {
+                            const cardCategory = card.dataset.category;
+                            const hasActiveCategory = [...document.querySelectorAll('.category-btn.active')]
+                                .some(btn => btn.dataset.category === cardCategory);
+                            card.style.display = hasActiveCategory ? 'block' : 'none';
+                        });
+                    }
+                });
+            });
+
+            // Initialize
+            loadCart();
+        });
+    </script>
+<script src="app.js"></script>
+
+</body>
+</html>

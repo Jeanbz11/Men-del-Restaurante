@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistema de Pedidos - Restaurante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Estilos especiales para la tiquetera térmica */
+        @media print {
+            /* Ocultar absolutamente toda la página web original */
+            body * {
+                visibility: hidden;
+            }
+            /* Mostrar únicamente el contenedor del ticket */
+            #ticket-impresion, #ticket-impresion * {
+                visibility: visible;
+            }
+            #ticket-impresion {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 58mm; /* Tamaño estándar de tiquetera pequeña. Cambiar a 80mm si tu impresora es más grande */
+                font-family: 'Courier New', Courier, monospace; /* Fuente clásica de tique */
+                font-size: 12px;
+                color: #000;
+                line-height: 1.2;
+            }
+            /* Quitar márgenes de página del navegador */
+            @page {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center">
+                <img src="https://images.vexels.com/content/172815/preview/restaurant-logo-design-5460fc.png" alt="Logo" class="mr-2 rounded-full w-25 h-12">
+                <h1 id="restaurant-name" class="text-xl font-bold">Cargando...</h1>
+            </div>
+            <div class="text-gray-600">
+                <span id="current-time" class="font-medium"></span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <main class="md:col-span-2 bg-white rounded-xl shadow-md p-6">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="category-btn px-4 py-2 rounded-full bg-orange-200 text-orange-800 font-medium" data-category="desayunos"><i class="fas fa-egg mr-2"></i>Desayunos</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-emerald-200 text-emerald-800 font-medium" data-category="almuerzos"><i class="fas fa-drumstick-bite mr-2"></i>Almuerzos</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-yellow-200 text-yellow-800 font-medium" data-category="bebidas"><i class="fas fa-glass-water mr-2"></i>Bebidas</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-pink-200 text-pink-800 font-medium" data-category="batidos"><i class="fas fa-blender mr-2"></i>Batidos</button>
+                    <button class="category-btn px-4 py-2 rounded-full bg-purple-200 text-purple-800 font-medium" data-category="postres"><i class="fas fa-ice-cream mr-2"></i>Postres</button>
+                    <button class="category-btn px-5 py-2 rounded-full bg-sky-200 text-sky-800 font-medium" data-category="porciones"><i class="fas fa-drumstick-bite mr-2"></i>Porciones</button>
+                    <button class="category-btn px-5 py-2 rounded-full bg-rose-200 text-rose-800 font-medium" data-category="sopas"><i class="fas fa-bowl-rice mr-2"></i>Sopas</button>
+                    <button class="category-btn px-5 py-2 rounded-full bg-red-200 text-red-800 font-medium" data-category="comidaRapida"><i class="fas fa-burger mr-2"></i>Comida Rápida</button>
+                </div>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="products-grid"></div>
+            </main>
+
+            <aside class="sidebar bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4"><i class="fas fa-receipt mr-2"></i>Pedido Actual</h2>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Número de Mesa</label>
+                    <select id="table-number" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                        <option value="">Seleccionar mesa</option>
+                        <option value="1">Mesa 1</option>
+                        <option value="2">Mesa 2</option>
+                        <option value="3">Mesa 3</option>
+                        <option value="4">Mesa 4</option>
+                        <option value="5">Mesa 5</option>
+                    </select>
+                </div>
+                
+                <div id="cart-items" class="divide-y divide-gray-200 max-h-96 overflow-y-auto mb-4">
+                    <p class="text-gray-500 italic py-4 text-center" id="empty-cart-message">No tiene pedidos aún</p>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-4 mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-medium">Total:</span>
+                        <span id="subtotal" class="font-bold text-lg">$0.00</span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-2">
+                    <button id="send-order" class="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md font-medium"><i class="fas fa-print mr-2"></i>Imprimir orden</button>
+                    <button id="clear-cart" class="bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md font-medium">Limpiar Orden</button>
+                </div>
+            </aside>
+        </div>
+    </div>
+    
+    <div id="ticket-impresion" class="hidden print:block"></div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>

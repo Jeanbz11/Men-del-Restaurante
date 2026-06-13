@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - Gestión de Menú Avanzado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 min-h-screen p-4 md:p-8 flex items-center justify-center">
+
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <div class="lg:col-span-5 bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-white/20">
+            <div class="text-center mb-6">
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-indigo-100 text-indigo-600 rounded-full mb-3 shadow-inner">
+                    <i class="fas fa-utensils text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800 tracking-tight">Nuevo Plato</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Añade productos al menú de Alexita</p>
+            </div>
+
+            <form id="product-form" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Nombre del Plato</label>
+                    <div class="relative rounded-lg shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fas fa-bowl-food"></i>
+                        </div>
+                        <input type="text" id="prod-name" placeholder="Ej: Tigrillo con Queso" required class="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Precio de Venta ($)</label>
+                    <div class="relative rounded-lg shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">$</div>
+                        <input type="number" step="0.01" id="prod-price" placeholder="0.00" required class="block w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Categoría del Menú</label>
+                    <div class="relative rounded-lg shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fas fa-tags"></i>
+                        </div>
+                        <select id="prod-category" class="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all appearance-none cursor-pointer text-sm">
+                            <option value="desayunos">☕ Desayunos</option>
+                            <option value="almuerzos">🍲 Almuerzos</option>
+                            <option value="bebidas">🍹 Bebidas</option>
+                            <option value="batidos">🥤 Batidos</option>
+                            <option value="postres">🍰 Postres</option>
+                            <option value="porciones">🍟 Porciones</option>
+                            <option value="sopas">🥣 Sopas</option>
+                            <option value="comidaRapida">🍔 Comida Rápida</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Enlace de la Imagen (URL)</label>
+                    <div class="relative rounded-lg shadow-sm">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <i class="fas fa-image"></i>
+                        </div>
+                        <input type="url" id="prod-image" placeholder="https://ejemplo.com/foto.jpg" required class="block w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-slate-800">¿Disponible hoy?</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="prod-available" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+
+                <button type="submit" id="btn-save" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer text-sm">
+                    <i class="fas fa-plus-circle"></i> Agregar al Menú
+                </button>
+            </form>
+        </div>
+
+        <div class="lg:col-span-7 bg-white/95 backdrop-blur-sm p-6 rounded-2xl shadow-2xl border border-white/20 h-full max-h-[620px] flex flex-col">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fas fa-toggle-on text-indigo-600"></i> Monitor de Existencias
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Habilita o deshabilita los platos que ven los clientes en tiempo real.</p>
+            </div>
+
+            <div id="lista-platos" class="space-y-3 overflow-y-auto pr-2 flex-1 scrollbar-thin scrollbar-thumb-indigo-200">
+                <div class="text-center py-8 text-slate-400">
+                    <i class="fas fa-spinner fa-spin text-2xl mb-2 text-indigo-500"></i>
+                    <p class="text-xs">Sincronizando menú actual...</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, collection, getDocs, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyABS_dDTMu7mvUioUwqFMNOlNy7JsiWp0c",
+            authDomain: "sistema-pedidos-restaurantes.firebaseapp.com",
+            projectId: "sistema-pedidos-restaurantes",
+            storageBucket: "sistema-pedidos-restaurantes.firebasestorage.app",
+            messagingSenderId: "56931323022",
+            appId: "1:56931323022:web:312bf9658f91f407e24ddf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const idRestaurante = "restaurante-Alexita";
+        const menuRef = collection(db, `restaurantes/${idRestaurante}/menu`);
+
+        // ==========================================
+        // OBTENER Y MAPEAR PLATOS EN TIEMPO REAL
+        // ==========================================
+        onSnapshot(menuRef, (snapshot) => {
+            const listaContenedor = document.getElementById('lista-platos');
+            listaContenedor.innerHTML = '';
+
+            if(snapshot.empty) {
+                listaContenedor.innerHTML = '<p class="text-center text-sm text-slate-400 py-6">El menú está vacío. Registra el primer plato.</p>';
+                return;
+            }
+
+            // Ordenamos los platos numéricamente por su ID para mantener la consistencia visual
+            const platos = [];
+            snapshot.forEach(doc => {
+                platos.push({ docId: doc.id, ...doc.data() });
+            });
+            platos.sort((a, b) => a.id - b.id);
+
+            // Pintar cada plato en el monitor de control
+            platos.forEach(plato => {
+                const isChecked = plato.disponible !== false ? 'checked' : '';
+                const bgEstado = plato.disponible !== false ? 'bg-indigo-50/60 border-indigo-100' : 'bg-slate-50 border-slate-100 opacity-75';
+                const badgeColor = plato.disponible !== false ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                const badgeText = plato.disponible !== false ? 'Disponible' : 'Agotado';
+
+                listaContenedor.innerHTML += `
+                    <div class="flex items-center justify-between p-3 ${bgEstado} border rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
+                        <div class="flex items-center gap-3">
+                            <img src="${plato.image || 'https://via.placeholder.com/50'}" onerror="this.src='https://via.placeholder.com/50'" class="w-11 h-11 object-cover rounded-lg shadow-inner">
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${plato.name}</h4>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-xs font-medium text-slate-500">$${Number(plato.price).toFixed(2)}</span>
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-md font-semibold tracking-wide uppercase ${badgeColor}">${badgeText}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer toggle-disponibilidad" data-id="${plato.docId}" ${isChecked}>
+                            <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                        </label>
+                    </div>
+                `;
+            });
+
+            // Asignar los Eventos de clic a los interruptores generados
+            document.querySelectorAll('.toggle-disponibilidad').forEach(switchInput => {
+                switchInput.addEventListener('change', async (e) => {
+                    const documentoId = e.target.getAttribute('data-id');
+                    const nuevoEstado = e.target.checked;
+                    
+                    try {
+                        const docTarget = doc(db, `restaurantes/${idRestaurante}/menu`, documentoId);
+                        // Modificamos selectivamente solo el campo 'disponible' en Firestore
+                        await updateDoc(docTarget, { disponible: nuevoEstado });
+                    } catch (error) {
+                        console.error("Error al actualizar disponibilidad:", error);
+                        alert("No se pudo actualizar el estado del plato.");
+                    }
+                });
+            });
+        });
+
+        // ==========================================
+        // AGREGAR NUEVO PRODUCTO AL FORMULARIO
+        // ==========================================
+        document.getElementById('product-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            const btn = document.getElementById('btn-save');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+
+            const name = document.getElementById('prod-name').value;
+            const price = document.getElementById('prod-price').value;
+            const category = document.getElementById('prod-category').value;
+            const image = document.getElementById('prod-image').value;
+            const disponible = document.getElementById('prod-available').checked;
+
+            try {
+                const snapshot = await getDocs(menuRef);
+                const nuevoId = snapshot.size + 1;
+                const docRef = doc(db, `restaurantes/${idRestaurante}/menu`, `plato_${nuevoId}`);
+                
+                await setDoc(docRef, {
+                    id: Number(nuevoId),
+                    name: name,
+                    price: Number(price),
+                    category: category,
+                    image: image,
+                    disponible: disponible
+                });
+
+                alert(`¡✅ "${name}" guardado con éxito!`);
+                document.getElementById('product-form').reset(); 
+                document.getElementById('prod-available').checked = true;
+            } catch (error) {
+                console.error(error);
+                alert("Hubo un error al guardar.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-plus-circle"></i> Agregar al Menú';
+            }
+        });
+    </script>
+</body>
+</html>

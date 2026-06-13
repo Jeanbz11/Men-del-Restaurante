@@ -1,58 +1,317 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="manifest" href="manifest.json">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('App lista para usarse sin internet', reg))
+      .catch(err => console.error('Error al registrar la App', err));
+  }
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - Ventas</title>
+    <title>Panel Diario - Restaurante Alexita</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100 p-4 md:p-8">
-    <div class="max-w-5xl mx-auto">
-        <header class="mb-8 flex justify-between items-center">
-            <h1 id="admin-title" class="text-2xl font-bold text-gray-800 italic">Diario de Ventas</h1>
-            <div class="bg-white p-3 rounded-lg shadow-sm border">
-                <span class="text-sm text-gray-500">Hoy es:</span>
-                <p id="today-date" class="font-bold"></p>
+<body class="bg-gray-50 p-4 md:p-8">
+
+    <div class="container mx-auto max-w-6xl">
+        
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <div>
+                <h1 id="admin-title" class="text-2xl md:text-3xl font-extrabold text-slate-800 italic tracking-tight">
+                    Diario: Cargando local...
+                </h1>
+            </div>
+            <div class="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3 w-full sm:w-auto">
+                <div class="text-left">
+                    <span class="text-xs text-gray-400 block font-medium">Auditar Fecha:</span>
+                    <input type="date" id="datepicker-filtro" class="font-bold text-slate-800 bg-transparent border-none outline-none cursor-pointer text-sm focus:text-indigo-600 transition-colors">
+                </div>
+                <div class="text-slate-300 text-lg border-l pl-2"><i class="fas fa-calendar-alt"></i></div>
             </div>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Ventas de Hoy</p>
-                <h2 id="total-today" class="text-3xl font-bold text-gray-800">$0.00</h2>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500 flex flex-col justify-between h-28 relative overflow-hidden">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Ventas Confirmadas</span>
+                <span id="metric-sales" class="text-3xl font-black text-slate-800">$0.00</span>
+                <div class="absolute right-4 bottom-4 text-emerald-100 text-4xl pointer-events-none"><i class="fas fa-money-bill-wave"></i></div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Cant. Pedidos</p>
-                <h2 id="count-today" class="text-3xl font-bold text-gray-800">0</h2>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-blue-500 flex flex-col justify-between h-28 relative overflow-hidden">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pedidos Aprobados</span>
+                <span id="metric-orders" class="text-3xl font-black text-slate-800">0</span>
+                <div class="absolute right-4 bottom-4 text-blue-100 text-4xl pointer-events-none"><i class="fas fa-check-circle"></i></div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500">
-                <p class="text-sm text-gray-500 uppercase font-semibold">Promedio por Mesa</p>
-                <h2 id="avg-today" class="text-3xl font-bold text-gray-800">$0.00</h2>
+
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-orange-500 flex flex-col justify-between h-28 relative overflow-hidden">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Promedio Real</span>
+                <span id="metric-average" class="text-3xl font-black text-slate-800">$0.00</span>
+                <div class="absolute right-4 bottom-4 text-orange-100 text-4xl pointer-events-none"><i class="fas fa-calculator"></i></div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border overflow-hidden">
-            <div class="p-4 border-b bg-gray-50">
-                <h3 class="font-bold text-gray-700">Detalle de Órdenes Recientes</h3>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="p-5 border-b border-gray-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <h3 class="font-bold text-slate-800 text-sm md:text-base flex items-center gap-2">
+                    <i class="fas fa-history text-indigo-500"></i> Control de Comandas y Validación
+                </h3>
+                <button id="btn-exportar-excel" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-1.5 px-3 rounded-lg text-xs transition-all flex items-center gap-1 cursor-pointer shadow-sm">
+                    <i class="fas fa-file-excel"></i> Exportar Reporte (Excel)
+                </button>
             </div>
+            
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="text-xs uppercase text-gray-400 border-b">
-                            <th class="p-4">Hora</th>
-                            <th class="p-4">Mesa</th>
-                            <th class="p-4">Productos</th>
-                            <th class="p-4 text-right">Total</th>
+                        <tr class="bg-slate-50 text-gray-400 uppercase text-[10px] font-bold tracking-wider border-b border-gray-100">
+                            <th class="py-3 px-6">Hora</th>
+                            <th class="py-3 px-6">Mesa</th>
+                            <th class="py-3 px-6">Productos</th>
+                            <th class="py-3 px-6">Observaciones</th>
+                            <th class="py-3 px-6">Estado</th>
+                            <th class="py-3 px-6 text-right">Total</th>
+                            <th class="py-3 px-6 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="sales-table-body" class="divide-y text-sm">
-                        </tbody>
+                    <tbody id="table-body" class="divide-y divide-gray-100 text-sm text-slate-700">
+                        <tr id="empty-row">
+                            <td colspan="7" class="text-center py-12 text-gray-400 italic">
+                                <i class="fas fa-inbox block text-xl mb-2 text-gray-300"></i> No se registran órdenes para la fecha seleccionada.
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 
-    <script type="module" src="admin-script.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyABS_dDTMu7mvUioUwqFMNOlNy7JsiWp0c",
+            authDomain: "sistema-pedidos-restaurantes.firebaseapp.com",
+            projectId: "sistema-pedidos-restaurantes",
+            storageBucket: "sistema-pedidos-restaurantes.firebasestorage.app",
+            messagingSenderId: "56931323022",
+            appId: "1:56931323022:web:312bf9658f91f407e24ddf"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const idRestaurante = urlParams.get('local') || 'restaurante-Alexita';
+
+        const datePicker = document.getElementById('datepicker-filtro');
+
+        const hoy = new Date();
+        const anio = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        
+        datePicker.value = `${anio}-${mes}-${dia}`;
+
+        let fechaTargetFormateada = hoy.toLocaleDateString('es-EC');
+        let nombreRestauranteDescarga = "Alexita";
+        let ordenesCargadasEnPantalla = [];
+
+        async function cargarTituloRestaurante() {
+            try {
+                const docRef = doc(db, "restaurantes", idRestaurante);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    nombreRestauranteDescarga = docSnap.data().nombre;
+                    document.getElementById('admin-title').textContent = `Diario: ${nombreRestauranteDescarga}`;
+                } else {
+                    document.getElementById('admin-title').textContent = `Diario: ${idRestaurante}`;
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function escucharOrdenesPorFecha() {
+            const ordenesRef = collection(db, `restaurantes/${idRestaurante}/ordenes`);
+
+            onSnapshot(ordenesRef, (snapshot) => {
+                const tableBody = document.getElementById('table-body');
+                
+                let acumVentasHoy = 0;
+                let contPedidosHoy = 0;
+                let htmlFilas = '';
+
+                ordenesCargadasEnPantalla = [];
+                snapshot.forEach((doc) => {
+                    const datos = doc.data();
+                    if (datos.fecha === fechaTargetFormateada) {
+                        ordenesCargadasEnPantalla.push({ docId: doc.id, ...datos });
+                    }
+                });
+
+                if (ordenesCargadasEnPantalla.length === 0) {
+                    document.getElementById('metric-sales').textContent = '$0.00';
+                    document.getElementById('metric-orders').textContent = '0';
+                    document.getElementById('metric-average').textContent = '$0.00';
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center py-12 text-gray-400 italic">
+                                <i class="fas fa-inbox block text-xl mb-2 text-gray-300"></i> No se registran órdenes para la fecha seleccionada.
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                ordenesCargadasEnPantalla.sort((a, b) => b.hora.localeCompare(a.hora));
+
+                ordenesCargadasEnPantalla.forEach((orden) => {
+                    const esAprobado = orden.estado === 'aprobado';
+                    if (esAprobado) {
+                        contPedidosHoy++;
+                        acumVentasHoy += Number(orden.total || 0);
+                    }
+
+                    let badgeClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                    let textoEstado = 'Pendiente';
+                    let filaBg = 'bg-white';
+
+                    if (orden.estado === 'aprobado') {
+                        badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                        textoEstado = 'Aprobado';
+                        filaBg = 'bg-emerald-50/20';
+                    }
+
+                    // Formatear visualmente la nota especial
+                    const textoNotas = orden.observacion ? orden.observacion : '—';
+                    const estiloNotas = orden.observacion ? 'text-amber-700 bg-amber-50/60 font-semibold px-2 py-0.5 rounded-md border border-amber-100/60 block max-w-[180px] truncate' : 'text-gray-300 italic';
+
+                    htmlFilas += `
+                        <tr class="${filaBg} hover:bg-slate-50 transition-colors">
+                            <td class="py-3.5 px-6 font-semibold text-slate-500 text-xs">${orden.hora}</td>
+                            <td class="py-3.5 px-6"><span class="bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md font-bold text-xs">Mesa ${orden.mesa}</span></td>
+                            <td class="py-3.5 px-6 text-xs text-slate-600 max-w-xs truncate font-medium" title="${orden.productos}">${orden.productos}</td>
+                            
+                            <td class="py-3.5 px-6 text-xs"><span class="${estiloNotas}" title="${textoNotas}">${textoNotas}</span></td>
+                            
+                            <td class="py-3.5 px-6">
+                                <span class="border px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide uppercase ${badgeClass}">
+                                    ${textoEstado}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-6 text-right font-bold text-slate-900">$${Number(orden.total).toFixed(2)}</td>
+                            <td class="py-3.5 px-6 text-center">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    ${!esAprobado ? `
+                                        <button data-id="${orden.docId}" class="btn-aprobar bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-1 px-2.5 rounded-md text-xs transition-all flex items-center gap-1 cursor-pointer">
+                                            <i class="fas fa-check text-[10px]"></i> Aprobar
+                                        </button>
+                                    ` : `
+                                        <button disabled class="bg-gray-200 text-gray-400 font-bold py-1 px-2.5 rounded-md text-xs flex items-center gap-1 cursor-not-allowed">
+                                            <i class="fas fa-lock text-[10px]"></i> Validado
+                                        </button>
+                                    `}
+                                    <button data-id="${orden.docId}" class="btn-eliminar bg-rose-100 hover:bg-rose-600 hover:text-white text-rose-700 font-bold py-1 px-2 rounded-md text-xs transition-all cursor-pointer" title="Eliminar orden">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                const promedioMesa = contPedidosHoy > 0 ? (acumVentasHoy / contPedidosHoy) : 0;
+
+                document.getElementById('metric-sales').textContent = `$${acumVentasHoy.toFixed(2)}`;
+                document.getElementById('metric-orders').textContent = contPedidosHoy;
+                document.getElementById('metric-average').textContent = `$${promedioMesa.toFixed(2)}`;
+                
+                tableBody.innerHTML = htmlFilas;
+
+                // ASOCIAR ACCIONES
+                document.querySelectorAll('.btn-aprobar').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const idDoc = e.target.closest('button').getAttribute('data-id');
+                        const docRef = doc(db, `restaurantes/${idRestaurante}/ordenes`, idDoc);
+                        await updateDoc(docRef, { estado: 'aprobado' });
+                    });
+                });
+
+                document.querySelectorAll('.btn-eliminar').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        if(confirm("¿Deseas eliminar permanentemente este registro?")) {
+                            const idDoc = e.target.closest('button').getAttribute('data-id');
+                            const docRef = doc(db, `restaurantes/${idRestaurante}/ordenes`, idDoc);
+                            await deleteDoc(docRef);
+                        }
+                    });
+                });
+
+            }, (error) => {
+                console.error("Error en tiempo real:", error);
+            });
+        }
+
+        datePicker.addEventListener('change', (e) => {
+            const fechaSeleccionada = e.target.value;
+            if (!fechaSeleccionada) return;
+
+            const partes = fechaSeleccionada.split('-');
+            fechaTargetFormateada = `${parseInt(partes[2])}/${parseInt(partes[1])}/${partes[0]}`;
+            
+            escucharOrdenesPorFecha();
+        });
+
+        // 📊 EXPORTAR REPORTE EXCEL CON COLUMNA DE OBSERVACIONES
+        document.getElementById('btn-exportar-excel').addEventListener('click', () => {
+            if (ordenesCargadasEnPantalla.length === 0) {
+                alert("⚠️ No hay datos registrados en esta fecha para exportar.");
+                return;
+            }
+
+            // 🌟 Encabezado con columna de observaciones incluida
+            let contenidoCSV = "Fecha;Hora;Mesa;Productos;Observaciones;Estado;Total\n";
+
+            ordenesCargadasEnPantalla.forEach(orden => {
+                const filaFecha = orden.fecha || '';
+                const filaHora = orden.hora || '';
+                const filaMesa = `Mesa ${orden.mesa}`;
+                const filaProductos = (orden.productos || '').replace(/;/g, ',');
+                
+                // 🌟 Casilla de observaciones limpia
+                const filaObservaciones = (orden.observacion || 'Ninguna').replace(/;/g, ',');
+                
+                const filaEstado = (orden.estado === 'aprobado') ? 'Aprobado' : 'Pendiente';
+                const filaTotal = Number(orden.total || 0).toFixed(2);
+
+                contenidoCSV += `${filaFecha};${filaHora};${filaMesa};${filaProductos};${filaObservaciones};${filaEstado};${filaTotal}\n`;
+            });
+
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
+            const link = document.createElement("a");
+            const nombreArchivo = `Reporte_${nombreRestauranteDescarga.replace(/\s+/g, '_')}_${fechaTargetFormateada.replace(/\//g, '-')}.csv`;
+            
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", nombreArchivo);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarTituloRestaurante();
+            escucharOrdenesPorFecha();
+        });
+    </script>
 </body>
 </html>

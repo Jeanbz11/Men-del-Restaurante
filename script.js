@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 // 1. Configuración de tu Firebase
 const firebaseConfig = {
@@ -65,15 +65,10 @@ function renderizarTarjetas() {
     if (!productsGrid) return;
     productsGrid.innerHTML = '';
 
-    // 🌟 FILTRADO SEGURO: Por categoría Y por disponibilidad
+    // Filtrado seguro por categoría y disponibilidad
     const productosFiltrados = todosLosProductos.filter(plato => {
-        // Obligatorio: Si disponible es estrictamente false, queda fuera del menú del cliente.
-        // Si es true o si no existe el campo (platos antiguos), pasa el filtro.
         const estaDisponible = plato.disponible !== false;
-        
-        // Filtro por categoría activa
-        const coincideCategoria = categoriaActual === 'all' || plato.category.trim() === categoriaActual.trim();
-        
+        const coincideCategoria = categoriaActual === 'all' || plato.category.trim() === plato.category.trim();
         return estaDisponible && coincideCategoria;
     });
 
@@ -154,6 +149,10 @@ function actualizarInterfazCarrito() {
     if (carrito.length === 0) {
         cartItemsContainer.innerHTML = `<p class="text-gray-500 italic py-4 text-center" id="empty-cart-message">No hay items en el pedido</p>`;
         subtotalElement.textContent = '$0.00';
+        
+        // Ocultar campo de observaciones si el carrito está vacío
+        const obsContenedor = document.getElementById('contenedor-observacion');
+        if (obsContenedor) obsContenedor.remove();
         return;
     }
 
@@ -178,6 +177,18 @@ function actualizarInterfazCarrito() {
     });
 
     subtotalElement.textContent = `$${totalAcumulado.toFixed(2)}`;
+
+    // 🌟 INYECTAR EL CAMPO DE OBSERVACIONES DINÁMICAMENTE ARRIBA DE LOS BOTONES SI NO EXISTE YA
+    if (!document.getElementById('order-notes')) {
+        const wrapper = document.createElement('div');
+        wrapper.id = 'contenedor-observacion';
+        wrapper.className = 'mt-4 pt-3 border-t border-gray-100';
+        wrapper.innerHTML = `
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Notas Especiales o Alergias:</label>
+            <textarea id="order-notes" rows="2" placeholder="Ej: Sin cebolla, la carne bien cocida, termo térmico..." class="w-full p-2 text-xs bg-gray-50 border border-gray-200 rounded-lg text-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all resize-none"></textarea>
+        `;
+        cartItemsContainer.after(wrapper);
+    }
 }
 
 // Botón Limpiar Orden
@@ -191,14 +202,14 @@ if (btnClearCart) {
 }
 
 // ========================================================
-// 8. 🖨️ CONEXIÓN Y LOGICA DE IMPRESIÓN DIRECTA
+// 8. 🖨️ CONEXIÓN, ESCRITURA EN FIREBASE E IMPRESIÓN DIRECTA
 // ========================================================
 const btnSendOrder = document.getElementById('send-order');
 const selectMesa = document.getElementById('table-number');
 const ticketContenedor = document.getElementById('ticket-impresion');
 
 if (btnSendOrder) {
-    btnSendOrder.addEventListener('click', () => {
+    btnSendOrder.addEventListener('click', async () => {
         if (carrito.length === 0) {
             alert("⚠️ Tu carrito está vacío.");
             return;
@@ -210,14 +221,27 @@ if (btnSendOrder) {
             return;
         }
 
+        // Capturar la nota especial ingresada por el cliente
+        const inputNotas = document.getElementById('order-notes');
+        const notasCliente = inputNotas ? inputNotas.value.trim() : '';
+
+        btnSendOrder.disabled = true;
+        btnSendOrder.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando Pedido...';
+
         const nombreLocal = restaurantNameHeader ? restaurantNameHeader.textContent : 'Restaurante';
-        const fechaHora = new Date().toLocaleString();
+        
+        const ahora = new Date();
+        const fechaHoy = ahora.toLocaleDateString('es-EC'); 
+        const horaHoy = ahora.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }); 
+
+        let totalCuenta = 0;
+        let resumenProductos = [];
 
         let htmlTicket = `
             <div style="text-align: center; margin-bottom: 10px;">
                 <h3 style="margin: 0; font-size: 14px; font-weight: bold;">${nombreLocal.toUpperCase()}</h3>
                 <p style="margin: 2px 0; font-size: 11px;">*** COMANDA DE COCINA ***</p>
-                <p style="margin: 2px 0; font-size: 11px;">${fechaHora}</p>
+                <p style="margin: 2px 0; font-size: 11px;">${fechaHoy} ${horaHoy}</p>
                 <h2 style="margin: 5px 0; font-size: 18px; font-weight: bold; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 3px 0;">MESA: ${numeroMesa}</h2>
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
@@ -231,10 +255,10 @@ if (btnSendOrder) {
                 <tbody>
         `;
 
-        let totalCuenta = 0;
         carrito.forEach(item => {
             const subtotalItem = item.price * item.cantidad;
             totalCuenta += subtotalItem;
+            
             htmlTicket += `
                 <tr>
                     <td style="padding: 3px 0; font-weight: bold;">${item.cantidad}x</td>
@@ -242,11 +266,26 @@ if (btnSendOrder) {
                     <td style="padding: 3px 0; text-align: right;">$${subtotalItem.toFixed(2)}</td>
                 </tr>
             `;
+
+            resumenProductos.push(`${item.cantidad}x ${item.name}`);
         });
 
         htmlTicket += `
                 </tbody>
             </table>
+        `;
+
+        // 🌟 SI HAY NOTAS, SE INYECTAN EN EL PAPEL TÉRMICO PARA LOS COCINEROS
+        if (notasCliente) {
+            htmlTicket += `
+                <div style="border-top: 1px solid #000; margin-top: 5px; padding-top: 4px; font-size: 11px; text-align: left;">
+                    <strong style="font-size: 11px;">⚠️ OBSERVACIONES:</strong><br>
+                    <span style="font-style: italic; background-color: #f5f5f5; padding: 2px; display: block; font-size: 11px;">"${notasCliente}"</span>
+                </div>
+            `;
+        }
+
+        htmlTicket += `
             <div style="border-top: 1px dashed #000; margin-top: 8px; padding-top: 5px; text-align: right; font-size: 13px; font-weight: bold;">
                 TOTAL COMPRA: $${totalCuenta.toFixed(2)}
             </div>
@@ -256,14 +295,39 @@ if (btnSendOrder) {
             </div>
         `;
 
-        ticketContenedor.innerHTML = htmlTicket;
-        window.print();
+        // 🚀 PASO 1: GUARDAR EN FIREBASE (INCLUYENDO LA OBSERVACIÓN)
+        try {
+            const ordenesRef = collection(db, `restaurantes/${idRestaurante}/ordenes`);
+            
+            await addDoc(ordenesRef, {
+                fecha: fechaHoy,                               
+                hora: horaHoy,                                 
+                mesa: numeroMesa,                              
+                productos: resumenProductos.join(', '),        
+                total: Number(totalCuenta),
+                estado: 'pendiente',
+                observacion: notasCliente // 🌟 Almacenamos la nota en el documento de Google Cloud
+            });
 
-        // Limpieza automática
-        carrito = [];
-        localStorage.removeItem('carrito');
-        actualizarInterfazCarrito();
-        if (selectMesa) selectMesa.value = '';
+            console.log("✅ Pedido guardado correctamente en la nube.");
+
+            // 🖨️ PASO 2: DISPARAR ASISTENTE DE IMPRESIÓN
+            ticketContenedor.innerHTML = htmlTicket;
+            window.print();
+
+            // Reseteo
+            carrito = [];
+            localStorage.removeItem('carrito');
+            actualizarInterfazCarrito();
+            if (selectMesa) selectMesa.value = '';
+
+        } catch (error) {
+            console.error("❌ Error:", error);
+            alert("⚠️ Hubo un problema de conexión.");
+        } finally {
+            btnSendOrder.disabled = false;
+            btnSendOrder.innerHTML = '<i class="fas fa-print mr-2"></i>Imprimir Comanda';
+        }
     });
 }
 

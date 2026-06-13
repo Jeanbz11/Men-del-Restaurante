@@ -50,7 +50,10 @@ function escucharMenuFirebase() {
             todosLosProductos.push({ docId: doc.id, ...doc.data() });
         });
 
+        // Ordenamos numéricamente
         todosLosProductos.sort((a, b) => a.id - b.id);
+
+        // Los pintamos en la pantalla
         renderizarTarjetas();
     }, (error) => {
         console.error("Error al escuchar menú:", error);
@@ -62,12 +65,20 @@ function renderizarTarjetas() {
     if (!productsGrid) return;
     productsGrid.innerHTML = '';
 
+    // 🌟 FILTRADO SEGURO: Por categoría Y por disponibilidad
     const productosFiltrados = todosLosProductos.filter(plato => {
-        return categoriaActual === 'all' || plato.category.trim() === categoriaActual.trim();
+        // Obligatorio: Si disponible es estrictamente false, queda fuera del menú del cliente.
+        // Si es true o si no existe el campo (platos antiguos), pasa el filtro.
+        const estaDisponible = plato.disponible !== false;
+        
+        // Filtro por categoría activa
+        const coincideCategoria = categoriaActual === 'all' || plato.category.trim() === categoriaActual.trim();
+        
+        return estaDisponible && coincideCategoria;
     });
 
     if (productosFiltrados.length === 0) {
-        productsGrid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400">No hay platos en esta sección.</div>`;
+        productsGrid.innerHTML = `<div class="col-span-full text-center py-8 text-gray-400 font-medium">No hay platos disponibles en esta sección.</div>`;
         return;
     }
 
@@ -95,8 +106,10 @@ categoryButtons.forEach(boton => {
     boton.addEventListener('click', (e) => {
         const btn = e.target.closest('.category-btn');
         if (!btn) return;
+
         const cat = btn.getAttribute('data-category');
         categoriaActual = (categoriaActual === cat) ? 'all' : cat;
+
         renderizarTarjetas();
     });
 });
@@ -104,13 +117,21 @@ categoryButtons.forEach(boton => {
 // ========================================================
 // 7. INTERRUPTORES GLOBALES PARA EL CARRITO
 // ========================================================
+
 window.agregarAlCarrito = function(docId, name, price) {
     const itemExistente = carrito.find(item => item.id === docId);
+
     if (itemExistente) {
         itemExistente.cantidad++;
     } else {
-        carrito.push({ id: docId, name: name, price: Number(price), cantidad: 1 });
+        carrito.push({
+            id: docId,
+            name: name,
+            price: Number(price),
+            cantidad: 1
+        });
     }
+
     localStorage.setItem('carrito', JSON.stringify(carrito));
     actualizarInterfazCarrito();
 };
@@ -124,6 +145,7 @@ window.eliminarDelCarrito = function(docId) {
 function actualizarInterfazCarrito() {
     const cartItemsContainer = document.getElementById('cart-items');
     const subtotalElement = document.getElementById('subtotal');
+
     if (!cartItemsContainer || !subtotalElement) return;
 
     cartItemsContainer.innerHTML = '';
@@ -138,6 +160,7 @@ function actualizarInterfazCarrito() {
     carrito.forEach(item => {
         const costoItem = item.price * item.cantidad;
         totalAcumulado += costoItem;
+
         cartItemsContainer.innerHTML += `
             <div class="flex justify-between items-center py-2 border-b border-gray-100">
                 <div>
@@ -153,9 +176,11 @@ function actualizarInterfazCarrito() {
             </div>
         `;
     });
+
     subtotalElement.textContent = `$${totalAcumulado.toFixed(2)}`;
 }
 
+// Botón Limpiar Orden
 const btnClearCart = document.getElementById('clear-cart');
 if (btnClearCart) {
     btnClearCart.addEventListener('click', () => {
@@ -188,13 +213,12 @@ if (btnSendOrder) {
         const nombreLocal = restaurantNameHeader ? restaurantNameHeader.textContent : 'Restaurante';
         const fechaHora = new Date().toLocaleString();
 
-        // Estructurar el HTML plano simulando el ticket físico antiguo
         let htmlTicket = `
             <div style="text-align: center; margin-bottom: 10px;">
                 <h3 style="margin: 0; font-size: 14px; font-weight: bold;">${nombreLocal.toUpperCase()}</h3>
-                <p style="margin: 2px 0; font-size: 11px;">*** Impresión de ticket ***</p>
+                <p style="margin: 2px 0; font-size: 11px;">*** COMANDA DE COCINA ***</p>
                 <p style="margin: 2px 0; font-size: 11px;">${fechaHora}</p>
-                <h2 style="margin: 5px 0; font-size: 18px; font-weight: bold; border-top: 1px dashed #000; border-bottom: 1px dashed #bc0909; padding: 3px 0;">MESA: ${numeroMesa}</h2>
+                <h2 style="margin: 5px 0; font-size: 18px; font-weight: bold; border-top: 1px dashed #000; border-bottom: 1px dashed #000; padding: 3px 0;">MESA: ${numeroMesa}</h2>
             </div>
             <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
                 <thead>
@@ -228,15 +252,11 @@ if (btnSendOrder) {
             </div>
             <div style="text-align: center; margin-top: 15px; font-size: 10px;">
                 ----------------------------<br>
-                Generado por Sistema Ventas JPBB
-                Cualquier consulta, contáctanos al WhatsApp: 0968902919
+                Generado por Sistema Ventas
             </div>
         `;
 
-        // Llenar el contenedor invisible e invocar la impresión del sistema operativo
         ticketContenedor.innerHTML = htmlTicket;
-        
-        // Ejecutar impresión nativa
         window.print();
 
         // Limpieza automática
